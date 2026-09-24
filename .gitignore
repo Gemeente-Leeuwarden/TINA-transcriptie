@@ -1,0 +1,18 @@
+# Environment variables (see sample.env)
+.env*
+frontend/.env
+
+.DS_Store
+CLAUDE.md
+
+# Frontend distribution
+frontend/dist/
+
+frontend/node_modules/
+
+# Python worker
+__pycache__/
+gpu/.venv/
+gpu/worker.pid
+gpu/worker.log
+

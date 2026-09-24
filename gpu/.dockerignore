@@ -1,0 +1,9 @@
+.venv
+__pycache__
+**/__pycache__
+worker.log
+worker.pid
+.DS_Store
+Dockerfile
+.dockerignore
+build-multiarch.sh

@@ -1,0 +1,16 @@
+# Keep the build context small: only Go sources, frontend sources, and module
+# files are needed by the root Dockerfile.
+.git
+.env
+*.env
+!sample.env
+frontend/node_modules
+frontend/dist
+gpu/.venv
+gpu/worker.log
+gpu/worker.pid
+gpu/__pycache__
+**/__pycache__
+*.md
+.claude
+.idea

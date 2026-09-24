@@ -1,0 +1,107 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    #container_name: postgres_database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-passwordpassword}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  # Go API server + built React SPA (single binary serves both — see root
+  # Dockerfile). Replaces running `go run ./cmd/platform` manually.
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tina-app:latest
+    pull_policy: build
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+      - redis
+      - rabbitmq
+      - minio
+    env_file:
+      - .env
+    environment:
+      # Override the .env localhost values: inside the compose network the
+      # app reaches infra by service name, not localhost.
+      DB_HOST: postgres-db
+      REDIS_HOST: redis
+      REDIS_URL: redis:6379
+      RABBITMQ_HOST: rabbitmq
+      MINIO_ENDPOINT: minio:9000
+
+  # Transcription/LLM worker — the container runs gpu/main.py directly
+  # (see gpu/Dockerfile), which is the containerized equivalent of
+  # ./start-worker.sh. Starts automatically with `docker compose up -d`;
+  # don't also run start-worker.sh on the host, or the two workers will
+  # steal each other's jobs from the shared queue.
+  worker:
+    build:
+      context: ./gpu
+      dockerfile: Dockerfile
+    image: tina-worker:latest
+    pull_policy: build
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - minio
+    env_file:
+      - .env
+    environment:
+      # Override the .env localhost values: inside the compose network the
+      # worker reaches infra by service name, not localhost.
+      RABBITMQ_HOST: rabbitmq
+      MINIO_ENDPOINT: minio:9000
+    extra_hosts:
+      # Lets TRANSCRIPTION_API_URL / LLM_API_URL point at host-run model
+      # servers via host.docker.internal on Linux (already works on Docker
+      # Desktop for macOS/Windows).
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  minio_data:
+  postgres_data:
