@@ -283,7 +283,8 @@ Inzet van TINA in een productieomgeving vraagt om een penetratietest.
 
 ## Bijdragen en contact
 
-Gemeente Leeuwarden is maintainer van deze repository. Voor het Friese spraak-naar-tekstmodel is NHL Stenden het aanspreekpunt.
+Gemeente Leeuwarden is voorlopig maintainer van deze repository. We zoeken uit hoe we dit kunnen beleggen. 
+Voor het Friese spraak-naar-tekstmodel is NHL Stenden het aanspreekpunt. Zie: https://github.com/imaihub/tina-transcription-api
 
 ## Licentie
 
