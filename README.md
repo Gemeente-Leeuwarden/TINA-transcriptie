@@ -76,7 +76,7 @@ Het team heeft TINA stap voor stap en agile ontwikkeld, in nauwe samenwerking me
 - een onderzoeksverslag over het ontwikkelen van spraak-naar-tekstmodellen voor kleine talen en dialecten,
 - een onderzoek onder inwoners naar de bereidheid om mee te doen aan automatische gesprekstranscriptie. In een enquête onder 500 bijstandsgerechtigden gaf ruim 80% aan geen probleem te hebben met veilige transcriptieondersteuning bij de gevoelige bijstandsgesprekken.
 
-**Eerste praktijkervaringen.**  
+**Eerste praktijkervaringen**  
 Volgens de gebruikers bespaart TINA per overleg tot ruim een half uur aan verslaglegging. In kwalitatieve zin wordt de grootste winst behaald. Gebruilkers ervaren de verslagen als uniformer, nauwkeuriger en objectiever. En vooral dat ze meer aandacht hebben voor het gesprek en hun gesprekspartner. De automatisch gemaakte verslagen zijn al een goede basis, maar menselijke controle en correctie blijft nodig.
 
 ## Status en beheer
@@ -158,7 +158,7 @@ TINA leest alle configuratie uit omgevingsvariabelen. De Go-server en de Python-
 
 Kies voor `JWT_SECRET` en de encryptiesleutel eigen, geheime waarden, en zet `.env` nooit in Git.
 
-> [!CAUTION]
+> [!NOTE]
 > **Modelserver op dezelfde machine en TINA in Docker?** Gebruik dan in `.env` `http://host.docker.internal:<poort>/...` in plaats van `localhost`. Vanuit een container verwijst `localhost` naar de container zelf. De adressen van PostgreSQL, Redis, RabbitMQ en MinIO worden voor de containers automatisch op de servicenamen uit Compose gezet.
 
 ### Optie A: met Docker Compose (aanbevolen)
