@@ -1,5 +1,5 @@
 # TINA transcriptie
-
+![TINA logo](./docs/26.06%20Logo_Tina_GL_Blauw.png "TINA Logo")
 **Transcriptietool, ontwikkeld door en voor overheidsorganisaties.**
 
 TINA neemt gesprekken op of verwerkt geüploade audio, zet die automatisch om in een transcript en maakt daar met een taalmodel een gespreksverslag van. TINA is ontworpen om veilig, modulair en schaalbaar transcriptie in de organisatie beschikbaar te stellen. Mag data uit gesprekken de organisatie niet verlaten? Dan kan dat. Er is maximale regie over je data. Als dat nodig is, gebeurt alle verwerking  in de eigen omgeving: audio, transcripten en verslagen blijven daar, en TINA gebruikt geen externe (cloud-)API's.
