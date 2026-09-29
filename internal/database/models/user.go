@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 type UserSource string
 
 const (
-	SourceLocal UserSource = ""
-	SourceAzure UserSource = ""
+	SourceLocal UserSource = "local"
+	SourceAzure UserSource = "azure"
 )
 
 type User struct {
