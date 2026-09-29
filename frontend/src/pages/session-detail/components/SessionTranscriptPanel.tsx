@@ -17,7 +17,7 @@ export function SessionTranscriptPanel({
         <div className="space-y-1">
           {transcriptLines.map((line) => (
             <div key={line.sequence} className="flex gap-2">
-              {line.start_ms > 0 && (
+              {line.start_ms >= 0 && (
                 <span className="shrink-0 font-mono text-xs text-slate-400 pt-0.5">
                   [{formatMs(line.start_ms)}]
                 </span>

@@ -21,12 +21,16 @@ export function parseTranscriptLine(line: string): ParsedTranscriptLine {
   };
 }
 
+// Transcript stamps are offsets from the start of the recording, so 0 is a
+// real value (the first line) rather than "missing". Fixed-width hh:mm:ss keeps
+// the left edge of a long transcript aligned.
 export function formatMs(ms: number): string {
-  if (!ms || ms <= 0) return "";
+  if (!Number.isFinite(ms) || ms < 0) return "";
   const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  return [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
 }
 
 export function formatPromptStatus(status: string): string {
@@ -71,12 +75,7 @@ export function buildTranscriptExportText(params: {
 
   return transcriptLines
     .map((line) => {
-      const ts =
-        line.start_ms > 0
-          ? `${Math.floor(line.start_ms / 60000)}:${Math.floor((line.start_ms % 60000) / 1000)
-              .toString()
-              .padStart(2, "0")}`
-          : "";
+      const ts = formatMs(line.start_ms);
       const name = getDisplayName(line.speaker);
       const prefix = ts ? `[${ts}] ` : "";
       const speakerPrefix = name ? `${name}: ` : "";

@@ -143,6 +143,17 @@ class Worker:
         bucket = msg["bucket"]
         segment_infos = sorted(msg.get("segments", []), key=lambda s: s.get("started_at_ms", 0))
 
+        # Live recordings carry one segment stream per participant, recorded in
+        # parallel, so the only axis that orders all speakers together is the
+        # wall clock. Rebasing onto the first captured audio turns the absolute
+        # stamps into "time since the recording started", which is what the UI
+        # renders. Uploads keep their existing stamps.
+        rebase = msg_type == "recording_ready"
+        base = 0
+        if rebase:
+            starts = [s.get("started_at_ms", 0) for s in segment_infos if s.get("started_at_ms", 0) > 0]
+            base = min(starts) if starts else 0
+
         segments: list[dict] = []
         transcript_parts: list[str] = []
 
@@ -164,7 +175,12 @@ class Worker:
             if not text:
                 continue
 
-            segments.append(segment_to_dict(started_at_ms, ended_at_ms, text, speaker=user_id))
+            if rebase:
+                seg_start = max(0, started_at_ms - base)
+                seg_end = max(seg_start, ended_at_ms - base)
+                segments.append(segment_to_dict(seg_start, seg_end, text, speaker=user_id))
+            else:
+                segments.append(segment_to_dict(started_at_ms, ended_at_ms, text, speaker=user_id))
             transcript_parts.append(text)
 
         self.publish({
